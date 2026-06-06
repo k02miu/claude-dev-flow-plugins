@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "devflow",
+  "displayName": "DevFlow Workflow",
+  "version": "1.0.0",
+  "description": "Multi-agent development workflow orchestration for Claude Code. Feature planning, issue resolution, branch finishing, PR creation, and multi-LLM review loops built on Agent Teams. Requires the experimental Agent Teams feature (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1) and the gh CLI.",
+  "author": {
+    "name": "k02miu"
+  },
+  "homepage": "https://github.com/k02miu/claude-dev-flow-plugins",
+  "repository": "https://github.com/k02miu/claude-dev-flow-plugins",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "devflow",
+    "agent-teams",
+    "code-review",
+    "workflow",
+    "multi-llm",
+    "github",
+    "pull-request"
+  ]
+}

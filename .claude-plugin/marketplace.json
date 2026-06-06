@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "k02miu-devflow",
+  "owner": {
+    "name": "k02miu"
+  },
+  "description": "DevFlow — multi-agent development workflow orchestration plugins for Claude Code.",
+  "plugins": [
+    {
+      "name": "devflow",
+      "source": "./plugins/devflow",
+      "description": "Multi-agent development workflow orchestration: feature planning, issue resolution, branch finishing, PR creation, and multi-LLM review loops built on Agent Teams.",
+      "category": "workflow",
+      "keywords": ["agent-teams", "code-review", "workflow", "github"]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "claude-code-devflow-marketplace",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Claude Code plugin marketplace hosting the DevFlow plugin — multi-agent development workflow orchestration (feature planning, issue resolution, branch finishing, PR creation, review loops) on Agent Teams.",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "claude-code-marketplace",
+    "devflow",
+    "agent-teams",
+    "code-review",
+    "workflow"
+  ],
+  "license": "MIT",
+  "author": "k02miu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k02miu/claude-dev-flow-plugins.git"
+  }
+}
