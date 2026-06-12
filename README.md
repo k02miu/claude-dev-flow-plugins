@@ -10,22 +10,45 @@ Claude Code の **Agent Teams** 機能を活用し、複数エージェントに
 - **Agent Teams** — `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が必要
 - **gh CLI**（GitHub CLI） — `gh auth login` で認証済みであること
 - **teammateMode** — Claude Code の設定で `"tmux"` を指定
+- **同梱 MCP のランタイム** — Node.js（`npx` — context7 用）、Python + uv（`uvx` — serena 用）
 
 ## リポジトリ構成（マーケットプレイス + プラグイン）
 
-このリポジトリ自体が Claude Code のプラグインマーケットプレイスです。1 つのプラグイン（`devflow`）をホストします:
+このリポジトリ自体が Claude Code のプラグインマーケットプレイスです。2 つのプラグインをホストします:
 
 ```
 <repo>/
 ├── .claude-plugin/
 │   └── marketplace.json          # マーケットプレイスカタログ（このリポジトリ）
 └── plugins/
-    └── devflow/
-        ├── .claude-plugin/
-        │   └── plugin.json       # devflow プラグインのマニフェスト
-        ├── agents/               # 専門サブエージェント 17 体
-        ├── skills/               # スキル 14 個（エントリ 6 + サブ 8）
-        └── .github/              # Issue/PR テンプレート見本（プロジェクト側の参考）
+    ├── devflow/                  # 本体プラグイン
+    │   ├── .claude-plugin/
+    │   │   └── plugin.json       # devflow プラグインのマニフェスト
+    │   ├── .mcp.json             # 同梱 MCP サーバー（context7 / serena）
+    │   ├── agents/               # 専門サブエージェント 17 体
+    │   ├── skills/               # スキル 14 個（エントリ 6 + サブ 8）
+    │   │   └── <skill>/
+    │   │       ├── SKILL.md      # 手順本体（500 行以下）
+    │   │       ├── references/   # instruct テンプレート等（実行時に段階的に Read）
+    │   │       └── scripts/      # 決定論的な補助スクリプト
+    │   └── .github/              # Issue/PR テンプレート見本（プロジェクト側の参考）
+    └── devflow-infra-mcp/        # オプション: クラウド知識 MCP（AWS / Azure / GCP）
+```
+
+## MCP 統合
+
+`devflow` は以下の MCP サーバーを同梱しており、プラグインを有効化すると自動的に利用可能になります:
+
+| サーバー | 用途 | 主な利用エージェント |
+|----------|------|----------------------|
+| `context7` | ライブラリ最新ドキュメント検索 | `library-researcher` |
+| `serena` | セマンティックコード検索（シンボル・参照関係） | `existing-code-reviewer`, `code-architecture-reviewer`, `architecture-planner` |
+
+インフラ調査を強化したい場合は、オプションプラグイン **`devflow-infra-mcp`** を追加インストールしてください
+（AWS / Azure / Google Cloud の知識 MCP。GCP は `GOOGLE_DEVELOPER_KNOWLEDGE_API_KEY` 環境変数が必要）:
+
+```shell
+/plugin install devflow-infra-mcp@k02miu-devflow
 ```
 
 ## インストール

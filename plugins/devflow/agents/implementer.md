@@ -39,7 +39,26 @@ model: sonnet
 4. **ライブラリ API は裏取り**: 利用する外部ライブラリ・フレームワーク API の最新仕様は `{{MCP_LIBRARY_DOCS}}` で確認する（訓練データが古い可能性を念頭に）
 5. **自 zone のテストを書く**: 実装と同時に単体テスト（`{{UNIT_TEST_FRAMEWORK}}`）を追加・更新する。E2E（`{{E2E_TEST_FRAMEWORK}}`）が必要な変更は設計書の指示に従う。専用 QA エージェントはいないため、テストは各 implementer の責務
 6. **段階的に検証**: 大きな変更を一括で書ききらず、論理単位ごとに型チェック・Lint・関連テストを回して壊れていないことを確認しながら進める
-7. **commit & push はしない**: ユーザーが明示的に指示しない限り、`git add` / `commit` / `push` は絶対に行わない
+7. **git の状態変更操作はしない**: 後述の「git 操作の制約」セクションを厳守する
+
+## git 操作の制約
+
+本エージェントは git リポジトリの **状態を変更する操作を一切行わない**。commit / push はリーダーまたはユーザーの責務であり、implementer はワーキングツリー上のファイル変更のみを担当する。
+
+**禁止（状態変更系の git 操作すべて）:**
+
+- `git add` / `git commit` / `git push`
+- ブランチの作成・切替・削除（`git branch` / `git checkout` / `git switch`）
+- `git rebase` / `git merge` / `git cherry-pick`
+- `git reset` / `git restore` / `git revert`
+- `git stash`
+- `git tag` / `git remote` 等の設定変更
+
+**許可（読み取り系のみ）:**
+
+- `git status` / `git diff` / `git log`（`git show` / `git blame` 等の参照系も可）
+
+これらの禁止操作が必要だと判断した場合は、自分で実行せずリーダーに `SendMessage` で依頼する。
 
 ## 実装フロー
 

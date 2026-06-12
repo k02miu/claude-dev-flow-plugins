@@ -2,6 +2,7 @@
 name: e2e-test-planner
 description: E2E test design specialist. Analyzes impact on existing E2E tests, designs new scenarios, defines Page Object strategies, and extracts manual verification items for browser extensions. Used for E2E test planning before new feature implementation and impact analysis for UX flow changes.
 model: sonnet
+disallowedTools: Edit, NotebookEdit
 ---
 
 あなたは E2E テスト設計専門家です。プロジェクトの E2E フレームワーク・ガイドラインに沿ってシナリオを設計します。

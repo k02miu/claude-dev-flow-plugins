@@ -9,9 +9,16 @@
     {
       "name": "devflow",
       "source": "./plugins/devflow",
-      "description": "Multi-agent development workflow orchestration: feature planning, issue resolution, branch finishing, PR creation, and multi-LLM review loops built on Agent Teams.",
+      "description": "Multi-agent development workflow orchestration: feature planning, issue resolution, branch finishing, PR creation, and multi-LLM review loops built on Agent Teams. Bundles context7 (library docs) and serena (semantic code search) MCP servers.",
       "category": "workflow",
-      "keywords": ["agent-teams", "code-review", "workflow", "github"]
+      "keywords": ["agent-teams", "code-review", "workflow", "github", "mcp"]
+    },
+    {
+      "name": "devflow-infra-mcp",
+      "source": "./plugins/devflow-infra-mcp",
+      "description": "Optional cloud knowledge MCP servers (AWS, Azure, Google Cloud) for DevFlow's infrastructure agents. Install only if your project touches cloud infrastructure.",
+      "category": "mcp",
+      "keywords": ["mcp", "aws", "azure", "gcp", "infrastructure", "devflow"]
     }
   ]
 }
