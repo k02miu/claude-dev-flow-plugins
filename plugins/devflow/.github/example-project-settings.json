@@ -1,5 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "k02miu-devflow": {
+      "source": { "source": "github", "repo": "k02miu/claude-dev-flow-plugins" }
+    }
+  },
+  "enabledPlugins": {
+    "devflow@k02miu-devflow": true,
+    "devflow-infra-mcp@k02miu-devflow": true
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "tmux",
   "permissions": {
     "allow": [
       "Bash",

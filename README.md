@@ -152,8 +152,11 @@ PR レビューの自動収束ループ:
 }
 ```
 
-プロジェクトフォルダを信頼した際にチームへ自動的にこのマーケットプレイスを提示するには、プロジェクトの
-`.claude/settings.json` に追加します:
+### チーム開発での推奨: settings.json をリポジトリにコミット
+
+チーム開発（特に devcontainer 運用）では、各メンバーが `/plugin install` を打つ必要がないよう、
+プロジェクトの `.claude/settings.json` をリポジトリにコミットして配布するのが推奨です。
+フォルダを信頼した時点でマーケットプレイス登録とプラグイン有効化が自動で行われます:
 
 ```json
 {
@@ -163,10 +166,23 @@ PR レビューの自動収束ループ:
     }
   },
   "enabledPlugins": {
-    "devflow@k02miu-devflow": true
+    "devflow@k02miu-devflow": true,
+    "devflow-infra-mcp@k02miu-devflow": true
   }
 }
 ```
+
+- `enabledPlugins` のキーは `プラグイン名@マーケットプレイス名` 形式（マーケットプレイス名は
+  `marketplace.json` の `name` = `k02miu-devflow`。GitHub のリポジトリパスではありません)
+- クラウドインフラを扱わないプロジェクトでは `devflow-infra-mcp` の行を省きます
+- 完全な見本: [`plugins/devflow/.github/example-project-settings.json`](plugins/devflow/.github/example-project-settings.json)
+
+### devcontainer での注意点
+
+- コンテナイメージに以下を含めてください: **Node.js**（`npx` — context7 / Azure MCP 用）、
+  **uv**（`uvx` — serena / AWS MCP 用）、**tmux**（`teammateMode: "tmux"` 用）、**gh CLI**
+- `GOOGLE_DEVELOPER_KNOWLEDGE_API_KEY` などのシークレットは settings.json にコミットせず、
+  devcontainer の `remoteEnv` / secrets 機構やホスト側の環境変数で注入してください
 
 ### 併用: Agent Teams ヘルパースキル
 
