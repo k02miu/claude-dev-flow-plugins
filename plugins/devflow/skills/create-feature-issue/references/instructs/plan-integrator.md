@@ -13,15 +13,14 @@ Write 先: `.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/instruct.md`
 
 ## 統合対象の report
 
-以下を Read して統合してください:
+以下のうち、起動した Teammate の report を Read して統合してください（起動しなかった Teammate の report は存在しません）:
 
 - `.cache/c-f-i-t/{{TASK_SLUG}}/architecture-planner/report.md`
 - `.cache/c-f-i-t/{{TASK_SLUG}}/existing-code-reviewer/report.md`
 - `.cache/c-f-i-t/{{TASK_SLUG}}/library-researcher/report.md`
 - `.cache/c-f-i-t/{{TASK_SLUG}}/security-reviewer/report.md`
 - `.cache/c-f-i-t/{{TASK_SLUG}}/ui-designer/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/unit-test-planner/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/e2e-test-planner/report.md`
+- `.cache/c-f-i-t/{{TASK_SLUG}}/test-planner/report.md`
 
 ## Issue テンプレート
 

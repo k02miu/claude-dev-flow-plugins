@@ -1,5 +1,15 @@
 # Changelog
 
+## devflow 1.2.0 (2026-06-13)
+
+### Changed
+- **サブエージェントの同時起動数を削減（性能は維持）**: `create-feature-issue` / `resolve-issue` で、タスク種別判定の結果を実際の起動に反映。不要と判定した観点は起動・タスク作成しないように変更（従来は全観点を起動して「対象外」報告で完了させていた無駄を解消）。判断に迷う観点は安全側で起動するため網羅性は維持。Phase 1 の同時並列は最大 7 → 6 体、種別により 3〜5 体に
+- **テスト設計エージェントの統合**: `unit-test-planner` + `e2e-test-planner` を `test-planner`（`scope` で unit / e2e / both を指定）へ統合。`test-follow-up` は `scope=unit` で起動
+- **`implement` の設計レビュー条件化**: owner zone が 1 つ（小〜中規模）の場合は Phase 1-3 の設計レビュー（`code-architecture-reviewer`）をスキップし、複数 zone の大規模時のみ実施
+
+### Removed
+- エージェント `unit-test-planner` / `e2e-test-planner`（`test-planner` に統合、専門エージェント 17 → 16 体）
+
 ## devflow 1.1.0 / devflow-infra-mcp 1.0.0 (2026-06-13)
 
 ### Added
