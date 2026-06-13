@@ -11,14 +11,9 @@
       "command": "npx",
       "args": ["-y", "@azure/mcp@latest", "server", "start"]
     },
-    "aws": {
-      "command": "uvx",
-      "args": [
-        "mcp-proxy-for-aws@latest",
-        "https://aws-mcp.us-east-1.api.aws/mcp",
-        "--metadata",
-        "AWS_REGION=${AWS_REGION:-us-west-2}"
-      ]
+    "aws-knowledge": {
+      "type": "http",
+      "url": "https://knowledge-mcp.global.api.aws"
     }
   }
 }
