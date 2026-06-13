@@ -1,5 +1,7 @@
 ---
 name: add-storybook
+argument-hint: "[ベースブランチ（任意）]"
+allowed-tools: Bash(git diff:*), Bash(git symbolic-ref:*), Bash(grep:*)
 description: |-
   ブランチの変更差分から UI コンポーネントの変更を検出し、Storybook（または同等の
   コンポーネントカタログツール）用のストーリー/ドキュメントを追加・更新します。

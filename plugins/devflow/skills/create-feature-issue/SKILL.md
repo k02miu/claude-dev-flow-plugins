@@ -198,31 +198,10 @@ TeamCreate:
 
 #### 3-0. instruct.md の準備
 
-各 Teammate の instruct.md は **タスク固有の指示文** だけを記載します（役割・調査手順・出力フォーマットはエージェント側に内蔵済み）。
-
-共通テンプレート:
-
-```markdown
-# {{TEAMMATE_NAME}} 指示書
-
-## 指示文
-
-{{INSTRUCTION}}
-
-## 特記事項
-
-（必要に応じて、このタスク固有の追加観点・制約をここに記載）
-```
-
-各 Teammate の instruct.md を以下のパスに Write:
-
-- `.cache/c-f-i-t/{{TASK_SLUG}}/architecture-planner/instruct.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/existing-code-reviewer/instruct.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/library-researcher/instruct.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/security-reviewer/instruct.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/ui-designer/instruct.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/unit-test-planner/instruct.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/e2e-test-planner/instruct.md`
+`${CLAUDE_SKILL_DIR}/references/instructs/common.md` を Read し、「instruct.md 共通テンプレート」の
+`{{TEAMMATE_NAME}}` `{{INSTRUCTION}}` を置換して、Phase 1 の各 Teammate（architecture-planner / existing-code-reviewer /
+library-researcher / security-reviewer / ui-designer / unit-test-planner / e2e-test-planner）の
+`.cache/c-f-i-t/{{TASK_SLUG}}/<role>/instruct.md` に Write してください。
 
 特定 Teammate に追加観点が必要な場合（例: UI 設計者に「前提 Issue の要否を必ず判定すること」を追記するなど）、`## 特記事項` に記載する。architecture-planner の `## 特記事項` には「インフラ要否・IaC 設計・環境変数注入先も判定すること」を明記する。
 
@@ -232,26 +211,9 @@ instruct.md を全て書き出した後、**7 つの Teammate を 1 メッセー
 
 Mode A（Feature Planning）対応エージェント（architecture-planner / existing-code-reviewer / security-reviewer / ui-designer）には Mode A 指定を含める。モード分岐がないエージェントは素直に File-based 起動するだけで良い。
 
-共通起動プロンプト:
-
-```
-あなたはチーム "feature-plan" の Teammate "{{TEAMMATE_NAME}}" です。
-{{MODE_HINT}}
-
-TaskList でタスク一覧を確認し、自分のタスク「{{TASK_SUBJECT}}」を TaskUpdate で
-owner を自分に、status を in_progress に設定してから作業を開始してください。
-
-ファイルパス:
-- 指示: `.cache/c-f-i-t/{{TASK_SLUG}}/{{TEAMMATE_NAME}}/instruct.md`
-- 報告: `.cache/c-f-i-t/{{TASK_SLUG}}/{{TEAMMATE_NAME}}/report.md`
-- 質問: `.cache/c-f-i-t/{{TASK_SLUG}}/{{TEAMMATE_NAME}}/questions.md`
-- 回答: `.cache/c-f-i-t/{{TASK_SLUG}}/{{TEAMMATE_NAME}}/answers.md`
-
-system prompt に記載された File-based 起動手順に従ってください。
-コードには手を加えず、読み取り専用で調査を行ってください。
-```
-
-`{{MODE_HINT}}` は Mode A 対応エージェントには `Mode A (Feature Planning) で実行してください。` を設定。非対応エージェントは空欄。
+起動プロンプトは `${CLAUDE_SKILL_DIR}/references/instructs/common.md` の「共通起動プロンプト」を使用し、
+`{{TEAMMATE_NAME}}` `{{TASK_SUBJECT}}` `{{TASK_SLUG}}` `{{MODE_HINT}}` を置換して生成します
+（`{{MODE_HINT}}` の設定ルールも同ファイルに記載）。
 
 Task tool 呼び出し例:
 
@@ -262,7 +224,7 @@ Task tool:
   name: "architecture-planner"
   description: "アーキテクチャ設計"
   prompt: |
-    （上記の共通起動プロンプト。{{MODE_HINT}} = "Mode A (Feature Planning) で実行してください。"）
+    （共通起動プロンプト。{{MODE_HINT}} = "Mode A (Feature Planning) で実行してください。"）
 ```
 
 7 つの Teammate を同時起動したら、通知待ち受け前に `/compact` を 1 回実行してください。
@@ -288,36 +250,8 @@ Teammate から SendMessage で「質問があります」を受けたら:
 
 #### 5-1. plan-integrator の instruct.md を Write
 
-`.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/instruct.md`:
-
-```markdown
-# プラン統合・Issue 作成 指示書
-
-## 指示文
-
-{{INSTRUCTION}}
-
-## 統合対象の report
-
-以下を Read して統合してください:
-
-- `.cache/c-f-i-t/{{TASK_SLUG}}/architecture-planner/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/existing-code-reviewer/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/library-researcher/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/security-reviewer/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/ui-designer/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/unit-test-planner/report.md`
-- `.cache/c-f-i-t/{{TASK_SLUG}}/e2e-test-planner/report.md`
-
-## Issue テンプレート
-
-ユーザープロジェクトの `.github/ISSUE_TEMPLATE/feature_request.md` を Read して準拠。存在しない場合は `${CLAUDE_PLUGIN_ROOT}/.github/ISSUE_TEMPLATE/feature_request.md`（本プラグイン同梱サンプル）を参照する。どちらも無ければ一般的な機能要求 Issue 構成（背景・目的 / 受け入れ条件 / 実装方針 / 影響範囲 / リスク）で生成する。
-
-## 出力
-
-統合された Issue ドラフト（マークダウン）を `report.md` に Write。
-前提 Issue が必要な場合は同じ report.md に併記。
-```
+`${CLAUDE_SKILL_DIR}/references/instructs/plan-integrator.md` を Read し、「instruct.md テンプレート」の
+`{{INSTRUCTION}}` `{{TASK_SLUG}}` を置換して `.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/instruct.md` に Write してください。
 
 #### 5-2. plan-integrator の起動
 
@@ -328,18 +262,7 @@ Task tool:
   name: "plan-integrator"
   description: "プラン統合・Issue 作成"
   prompt: |
-    あなたはチーム "feature-plan" の Teammate "plan-integrator" です。
-
-    TaskList で自分のタスク「プラン統合・Issue 作成」を TaskUpdate で owner を自分に、
-    status を in_progress にしてから作業を開始してください。
-
-    ファイルパス:
-    - 指示: `.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/instruct.md`
-    - 報告: `.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/report.md`
-    - 質問: `.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/questions.md`
-    - 回答: `.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/answers.md`
-
-    system prompt に記載された File-based 起動手順に従ってください。
+    （references/instructs/plan-integrator.md の「起動プロンプト」を {{TASK_SLUG}} 置換して使用）
 ```
 
 ---
@@ -348,27 +271,8 @@ Task tool:
 
 #### 6-1. issue-reviewer の instruct.md を Write
 
-`.cache/c-f-i-t/{{TASK_SLUG}}/issue-reviewer/instruct.md`:
-
-```markdown
-# Issue ドラフトレビュー 指示書
-
-## 指示文
-
-{{INSTRUCTION}}
-
-## レビュー対象
-
-`.cache/c-f-i-t/{{TASK_SLUG}}/plan-integrator/report.md` を Read。
-
-## 参照
-
-`.github/ISSUE_TEMPLATE/feature_request.md` を Read。
-
-## 出力
-
-レビュー結果（JSON）を `report.md` に Write。
-```
+`${CLAUDE_SKILL_DIR}/references/instructs/issue-reviewer.md` を Read し、「instruct.md テンプレート」の
+`{{INSTRUCTION}}` `{{TASK_SLUG}}` を置換して `.cache/c-f-i-t/{{TASK_SLUG}}/issue-reviewer/instruct.md` に Write してください。
 
 #### 6-2. issue-reviewer の起動
 
@@ -379,18 +283,7 @@ Task tool:
   name: "issue-reviewer"
   description: "Issue ドラフトレビュー"
   prompt: |
-    あなたはチーム "feature-plan" の Teammate "issue-reviewer" です。
-
-    TaskList で自分のタスク「Issue ドラフトレビュー」を TaskUpdate で owner を自分に、
-    status を in_progress にしてから作業を開始してください。
-
-    ファイルパス:
-    - 指示: `.cache/c-f-i-t/{{TASK_SLUG}}/issue-reviewer/instruct.md`
-    - 報告: `.cache/c-f-i-t/{{TASK_SLUG}}/issue-reviewer/report.md`
-    - 質問: `.cache/c-f-i-t/{{TASK_SLUG}}/issue-reviewer/questions.md`
-    - 回答: `.cache/c-f-i-t/{{TASK_SLUG}}/issue-reviewer/answers.md`
-
-    system prompt に記載された File-based 起動手順に従ってください。
+    （references/instructs/issue-reviewer.md の「起動プロンプト」を {{TASK_SLUG}} 置換して使用）
 ```
 
 #### 6-3. レビュー結果の反映

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "devflow-infra-mcp",
+  "displayName": "DevFlow Infra MCP",
+  "version": "1.0.0",
+  "description": "Cloud knowledge MCP servers (AWS, Azure, Google Cloud) for DevFlow's infrastructure agents (infra-reviewer / architecture-planner). Optional add-on — install only if your project touches cloud infrastructure. Google Developer Knowledge requires the GOOGLE_DEVELOPER_KNOWLEDGE_API_KEY environment variable.",
+  "author": {
+    "name": "k02miu"
+  },
+  "homepage": "https://github.com/k02miu/claude-dev-flow-plugins",
+  "repository": "https://github.com/k02miu/claude-dev-flow-plugins",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "mcp",
+    "aws",
+    "azure",
+    "gcp",
+    "infrastructure",
+    "devflow"
+  ]
+}

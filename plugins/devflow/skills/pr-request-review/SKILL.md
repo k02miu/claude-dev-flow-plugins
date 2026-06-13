@@ -1,11 +1,14 @@
 ---
 name: pr-request-review
+argument-hint: "[PR番号（任意）]"
+allowed-tools: Bash(gh pr view:*)
 description: |
-  PR に対して {{PR_REVIEWER_MODEL_NAMES}} の4レビュアーへ並列でレビューを依頼します。
+  PR に対して GitHub Copilot / Claude / Codex / Gemini の4レビュアー（設定されたマルチ LLM レビュアー）へ
+  並列でレビューを依頼します。
   以下の場合に使用してください:
   - PR 作成直後にマルチ LLM レビューを走らせたいとき
   - 既存 PR に対してレビューの再依頼をしたいとき（差し戻し後の再レビュー含む）
-  - Copilot を `--add-reviewer @copilot`、Claude を `ready-for-review` ラベル、Codex/Gemini をコメントメンションで起動する一連の操作を一発で済ませたいとき
+  - 複数レビュアーの起動操作（レビュアー登録・ラベル付与・コメントメンション）を一発で済ませたいとき
 ---
 
 # PR Multi-Reviewer Request

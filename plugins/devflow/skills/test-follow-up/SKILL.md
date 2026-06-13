@@ -1,5 +1,7 @@
 ---
 name: test-follow-up
+argument-hint: "[ベースブランチ（任意）]"
+allowed-tools: Bash(git diff:*), Bash(git symbolic-ref:*)
 description: |-
   ブランチの変更差分に対して、不足しているテスト・古くなったテスト・誤ったアサーション・
   孤立したテスト（削除されたコードを参照しているテスト）を検出します。

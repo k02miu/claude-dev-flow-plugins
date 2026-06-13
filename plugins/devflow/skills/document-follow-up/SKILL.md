@@ -1,5 +1,7 @@
 ---
 name: document-follow-up
+argument-hint: "[ベースブランチ（任意）]"
+allowed-tools: Bash(git diff:*), Bash(git symbolic-ref:*), Bash(find:*)
 description: |-
   ブランチの変更差分（未コミット + コミット済み）と既存ドキュメントを比較し、乖離を検出・修正します。
   branch-finisher Step 1 で使用します。

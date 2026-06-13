@@ -1,5 +1,7 @@
 ---
 name: screen-ope
+argument-hint: "[ベースブランチ（任意）]"
+allowed-tools: Bash(git diff:*), Bash(git symbolic-ref:*)
 description: |-
   ブランチの変更差分から変更された画面・機能を特定し、テスト計画を作成します。
   オプションでブラウザ操作ツール（Playwright / Puppeteer / 利用可能なMCPなど）を使用し、
@@ -177,37 +179,8 @@ kill $DEV_PID 2>/dev/null || true
 
 #### 2-2. テスト計画書の作成
 
-`{{CACHE_DIR}}/screen-ope/{branch-name}/visual-test-plan.md` を作成:
-
-```markdown
-# 視的検証テスト計画
-
-## ブラウザツール状態
-- 利用可否: [利用可能 / 不可]
-- 使用ツール: [Playwright / MCP / curl]
-- スクリーンショット: [取得済み / 未取得]
-
-## 変更画面一覧
-
-| # | 画面/ルート | 変更種別 | 検証観点 | スクリーンショット |
-|---|------------|---------|---------|-------------------|
-| 1 | /login | レイアウト変更 | ログインフォーム配置、エラーメッセージ表示 | login-page.png |
-| 2 | /dashboard | 新規追加 | 全ウィジェット表示、データ取得状態 | dashboard.png |
-
-## 検証チェックリスト
-
-### 画面 1: [画面名]（/route）
-- [ ] 初期表示に問題がないか
-- [ ] 変更した要素が正しく表示されているか
-- [ ] インタラクション（クリック・入力）が正しく動作するか
-- [ ] エラー状態が適切に表示されるか
-- [ ] レスポンシブ対応に問題がないか
-- [ ] 異なるテーマでの表示に問題がないか
-- [ ] ローディング状態が適切か
-- [ ] アクセシビリティに問題がないか（Tab 操作、aria-label）
-
-### 画面 2: ...
-```
+`{{CACHE_DIR}}/screen-ope/{branch-name}/visual-test-plan.md` を作成します。
+テンプレートは `${CLAUDE_SKILL_DIR}/references/visual-test-plan-template.md` を Read して使用してください。
 
 ---
 
@@ -222,45 +195,8 @@ kill $DEV_PID 2>/dev/null || true
 
 #### 3-2. 検証結果レポートの作成
 
-`{{CACHE_DIR}}/screen-ope/{branch-name}/verification-report.md` を作成:
-
-```markdown
-# 画面操作検証レポート
-
-## サマリー
-- 変更画面数: [N]
-- ブラウザツール: [利用 / 未利用]
-- スクリーンショット取得: [N] 枚
-- 問題検出: [N] 件（Critical: N, High: N, Medium: N, Low: N）
-
-## 検証結果詳細
-
-### [画面名]（/route）
-| 検証項目 | 結果 | 備考 |
-|---------|------|------|
-| 初期表示 | ✅/❌ | [問題があれば記載] |
-| 要素表示 | ✅/❌ | |
-| インタラクション | ✅/❌ | |
-| エラー状態 | ✅/❌ | |
-| レスポンシブ | ✅/❌ | |
-| テーマ | ✅/❌ | |
-| アクセシビリティ | ✅/❌ | |
-
-## 問題一覧
-
-### 問題 #001
-- **画面**: /route
-- **種別**: レイアウト崩れ / 要素欠落 / 色の不一致 / その他
-- **説明**: [具体的な問題の説明]
-- **重要度**: High / Medium / Low
-- **修正案**: [修正方法の提案]
-- **スクリーンショット**: [該当画像パス]
-
-## スクリーンショット一覧
-| ファイル | 画面 | 説明 |
-|---------|------|------|
-| [path] | /route | 初期表示状態 |
-```
+`{{CACHE_DIR}}/screen-ope/{branch-name}/verification-report.md` を作成します。
+テンプレートは `${CLAUDE_SKILL_DIR}/references/verification-report-template.md` を Read して使用してください。
 
 ---
 
