@@ -3,7 +3,6 @@ argument-hint: [対象のissue番号やPRの補足説明（任意）]
 name: create-pr
 allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git log:*), Bash(git diff:*), Bash(git reflog:*), Bash(git merge-base:*), Bash(git remote get-url:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh repo view:*)
 description: "PRテンプレートに基づいてPull Requestを作成する"
-disable-model-invocation: true
 ---
 
 # Pull Request Creator (Generic)

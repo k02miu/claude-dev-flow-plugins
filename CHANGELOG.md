@@ -7,6 +7,7 @@
 - **テスト設計エージェントの統合**: `unit-test-planner` + `e2e-test-planner` を `test-planner`（`scope` で unit / e2e / both を指定）へ統合。`test-follow-up` は `scope=unit` で起動
 - **`implement` の設計レビュー条件化**: owner zone が 1 つ（小〜中規模）の場合は Phase 1-3 の設計レビュー（`code-architecture-reviewer`）をスキップし、複数 zone の大規模時のみ実施
 - **`create-pr` / `create-feature-issue` の可読性改善**: 冗長な強調・迂遠な表現・本文の重複を整理。生成する PR / Issue 本文向けに「簡潔・エンジニア向け・絵文字なし・一文を短く」のトーン方針を明示（手順・構造・変数・エージェント名は不変）
+- **`create-pr` の自動起動を許可**: `disable-model-invocation` を外し、「PR を作って」等の自然言語からも起動できるように。発火後は分析・本文作成のみで、PR 作成前にユーザー確認を挟むため誤発火の実害は小さい
 
 ### Removed
 - エージェント `unit-test-planner` / `e2e-test-planner`（`test-planner` に統合、専門エージェント 17 → 16 体）
