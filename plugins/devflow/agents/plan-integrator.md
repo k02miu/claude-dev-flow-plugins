@@ -22,8 +22,7 @@ disallowedTools: Edit, NotebookEdit
 - library-researcher の report
 - security-reviewer の report
 - ui-designer の report
-- unit-test-planner の report
-- e2e-test-planner の report
+- test-planner の report（単体テスト計画 + E2E テスト計画）
 
 欠けている report は「未実施」として扱い、その旨を明示する。
 
@@ -40,12 +39,12 @@ Issue テンプレートの各セクションに以下のように統合:
   - インフラ変更（architecture-planner の `infra`、該当する場合）
   - セキュリティ考慮事項（security-reviewer の requirements）
   - UI・コンポーネント（ui-designer、該当する場合。使用コンポーネントを明記）
-  - 単体テスト計画（unit-test-planner の new_test_cases）
-  - E2E テスト計画（e2e-test-planner の new_scenarios）
-- **受け入れ条件**: 各 Teammate の完了条件 + security-reviewer / unit-test-planner / e2e-test-planner の acceptance_criteria
+  - 単体テスト計画（test-planner の unit.new_test_cases）
+  - E2E テスト計画（test-planner の e2e.new_scenarios）
+- **受け入れ条件**: 各 Teammate の完了条件 + security-reviewer / test-planner の acceptance_criteria
 - **関連モデル**: architecture-planner の db_changes
 - **依存関係 / 前提**: 既存 Issue との関連 + ui-designer の prerequisite_issue_needed
-- **ブラウザ拡張の手動確認項目**: e2e-test-planner の browser_extension_manual_checks（該当する場合）
+- **ブラウザ拡張の手動確認項目**: test-planner の e2e.manual_checks（該当する場合）
 
 ## Phase 分割の原則
 

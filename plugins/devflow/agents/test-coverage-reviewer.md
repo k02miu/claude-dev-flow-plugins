@@ -1,6 +1,6 @@
 ---
 name: test-coverage-reviewer
-description: Test-perspective code review specialist. Evaluates test coverage, coverage gaps, mock strategy, boundary values, test independence/determinism, assertion quality, and brittleness — returning structured findings. Used for parallel test-oriented review during code review loops. Separate from test design (unit-test-planner / e2e-test-planner); this agent reviews existing/changed test code.
+description: Test-perspective code review specialist. Evaluates test coverage, coverage gaps, mock strategy, boundary values, test independence/determinism, assertion quality, and brittleness — returning structured findings. Used for parallel test-oriented review during code review loops. Separate from test design (test-planner); this agent reviews existing/changed test code.
 model: sonnet
 disallowedTools: Edit, NotebookEdit
 ---

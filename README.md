@@ -25,7 +25,7 @@ Claude Code の **Agent Teams** 機能を活用し、複数エージェントに
     │   ├── .claude-plugin/
     │   │   └── plugin.json       # devflow プラグインのマニフェスト
     │   ├── .mcp.json             # 同梱 MCP サーバー（context7 / serena）
-    │   ├── agents/               # 専門サブエージェント 17 体
+    │   ├── agents/               # 専門サブエージェント 16 体
     │   ├── skills/               # スキル 14 個（エントリ 6 + サブ 8）
     │   │   └── <skill>/
     │   │       ├── SKILL.md      # 手順本体（500 行以下）
@@ -84,8 +84,8 @@ claude plugin validate ./plugins/devflow     # プラグイン + frontmatter を
 
 | # | ステージ | 概要 |
 |---|----------|------|
-| 1 | `create-feature-issue` | 9 エージェントチーム → GitHub Issue |
-| 2 | `resolve-issue` | 9 エージェントチーム → 実装 |
+| 1 | `create-feature-issue` | 最大 8 エージェントチーム → GitHub Issue |
+| 2 | `resolve-issue` | 最大 8 エージェントチーム → 実装 |
 | 3 | `branch-finisher` | 5 ステップ品質ゲート |
 | 4 | `review-loop` | マルチ LLM × 最大 5 反復レビュー |
 | 5 | `create-pr` | 自動入力 PR |
@@ -93,7 +93,7 @@ claude plugin validate ./plugins/devflow     # プラグイン + frontmatter を
 
 ### 1. `/create-feature-issue <説明>`
 複数エージェントによる調査を伴って GitHub Issue を作成します:
-- **Phase 1**（並列）: 7 体の専門エージェントがアーキテクチャ・既存コード・ライブラリ・セキュリティ・UI・単体テスト・E2E テストを調査
+- **Phase 1**（並列・該当観点のみ）: 最大 6 体の専門エージェントがアーキテクチャ・既存コード・ライブラリ・セキュリティ・UI・テスト（単体 + E2E）を調査
 - **Phase 2**: 調査結果を Issue ドラフトに統合
 - **Phase 3**: Issue ドラフトのレビュー
 - **出力**: 包括的な実装プランを含む GitHub Issue
@@ -101,7 +101,7 @@ claude plugin validate ./plugins/devflow     # プラグイン + frontmatter を
 ### 2. `/resolve-issue <issue 番号>`
 Agent Teams を使って GitHub Issue を解決します:
 - create-feature-issue と同じ 3 フェーズ構造
-- **Phase 1**: 7 エージェントによる並列調査
+- **Phase 1**: 最大 6 エージェントによる並列調査（該当観点のみ起動）
 - **Phase 2**: Mermaid 図を含む実装プラン
 - **Phase 3**: プランレビュー
 - **Phase 4**: 自律的な実装
@@ -272,7 +272,7 @@ PR レビューの自動収束ループ:
 
 ## エージェント
 
-本プラグインは **17 体の専門エージェント** を含みます:
+本プラグインは **16 体の専門エージェント** を含みます:
 
 | エージェント | 役割 |
 |--------------|------|
@@ -280,7 +280,6 @@ PR レビューの自動収束ループ:
 | `business-requirement-reviewer` | ビジネス要件分析 *（単独利用 — ワークフローには自動接続されない。`devflow:business-requirement-reviewer` として手動起動）* |
 | `code-architecture-reviewer` | コード品質、パフォーマンス、アーキテクチャレビュー |
 | `docs-synthesizer` | ドキュメント生成 |
-| `e2e-test-planner` | E2E テストシナリオ設計 |
 | `existing-code-reviewer` | 再利用可能コード、コンフリクトリスク、後方互換性 |
 | `implementer` | 複数ファイル実装オーケストレータ |
 | `infra-reviewer` | Terraform、CI/CD、Docker、クラウドインフラ |
@@ -291,8 +290,8 @@ PR レビューの自動収束ループ:
 | `review-checklist-advisor` | レビューチェックリスト検証 |
 | `security-reviewer` | OWASP、STRIDE、セキュリティレビュー |
 | `test-coverage-reviewer` | テストカバレッジ分析 |
+| `test-planner` | テスト設計（単体 + E2E、scope 指定） |
 | `ui-designer` | UI コンポーネント設計 |
-| `unit-test-planner` | 単体テスト設計 |
 
 ## スキル
 
