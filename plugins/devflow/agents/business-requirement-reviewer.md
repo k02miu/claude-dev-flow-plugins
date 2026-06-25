@@ -1,7 +1,7 @@
 ---
 name: business-requirement-reviewer
 description: Business requirement, use case, and authorization design consistency reviewer. Detects gaps between implementation and documentation at the business requirement level, and extracts items requiring user confirmation. Used for document synchronization tasks and new feature business requirement reviews.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 

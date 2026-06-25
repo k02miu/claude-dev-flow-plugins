@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "devflow",
   "displayName": "DevFlow Workflow",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Multi-agent development workflow orchestration for Claude Code. Feature planning, issue resolution, branch finishing, PR creation, and multi-LLM review loops built on Agent Teams. Bundles context7 (library docs) and serena (semantic code search) MCP servers. Requires the experimental Agent Teams feature (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1) and the gh CLI.",
   "author": {
     "name": "k02miu"

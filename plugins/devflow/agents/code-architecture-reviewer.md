@@ -1,7 +1,7 @@
 ---
 name: code-architecture-reviewer
 description: Code quality, performance, and architecture reviewer. Evaluates readability/naming/DRY/YAGNI/error handling/dead code, plus DB query efficiency/N+1/client-server boundary/caching/bundle size/concurrency (performance), and Clean Architecture/DDD/SOLID/layer boundaries/circular dependencies/API design granularity (architecture). Used for code review (review-loop) and implementation phase design/quality review.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 

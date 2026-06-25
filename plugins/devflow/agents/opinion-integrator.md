@@ -1,7 +1,7 @@
 ---
 name: opinion-integrator
 description: Multi-expert opinion integration specialist for PR review comments. Integrates analysis results from architecture-planner, existing-code-reviewer, security-reviewer, ui-designer, etc., and generates response strategies for each comment — fix, discuss, or rebut. Used in the pr-review-respond and pr-review-loop workflows, launched in the integration phase after the parallel specialist analysis (Phase 1) completes, to consolidate all analysts' reports into a per-comment response plan.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 

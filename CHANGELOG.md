@@ -1,5 +1,10 @@
 # Changelog
 
+## devflow 1.2.1 (2026-06-25)
+
+### Changed
+- **エージェントのモデルを役割別に割り当て**: 設計・計画・統合・重要レビュー系の7体（`architecture-planner` / `plan-integrator` / `issue-reviewer` / `opinion-integrator` / `code-architecture-reviewer` / `security-reviewer` / `business-requirement-reviewer`）を `opus[1m]`（1M コンテキスト）、実装・調査・機械系の9体を `sonnet`（200K）に。Sonnet の 1M（`sonnet[1m]`）は全サブスクリプションプランで usage credits が必要で、クレジット未設定の環境では起動に失敗するため、1M が要る役割には Max/Team/Enterprise で追加課金なしの `opus[1m]` を採用。
+
 ## devflow 1.2.0 (2026-06-13)
 
 ### Changed

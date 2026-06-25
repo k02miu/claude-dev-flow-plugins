@@ -1,7 +1,7 @@
 ---
 name: architecture-planner
 description: Architecture & Design specialist. Used for new feature implementation planning, existing system redesign, PR review comment design analysis, and issue implementation strategy planning. Explores the codebase structure using code search tools to evaluate layer architecture, data flow, database schema changes, and backward compatibility. Also assesses infrastructure requirements, IaC design, environment variable injection targets, CI/CD impact, and cost implications.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: security-reviewer
 description: Security specialist. Investigates authentication, authorization, input validation, data protection, external integration security, and OWASP Top 10 considerations. Used for security requirement extraction for new features, PR review comment security assessment, and existing code security audits.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 

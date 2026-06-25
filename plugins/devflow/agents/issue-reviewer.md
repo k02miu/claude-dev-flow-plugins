@@ -1,7 +1,7 @@
 ---
 name: issue-reviewer
 description: Issue draft review specialist. Reviews issue drafts created by plan-integrator against template compliance, acceptance criteria completeness, implementation plan specificity, and technical accuracy. Uses documentation search and code search tools to verify technical claims. Used in the final validation phase of issue creation workflows.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 

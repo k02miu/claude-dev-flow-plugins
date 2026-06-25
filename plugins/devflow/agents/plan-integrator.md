@@ -1,7 +1,7 @@
 ---
 name: plan-integrator
 description: Multi-expert investigation result integration specialist. Reads reports from all teammates in the Feature Planning phase and generates an implementation plan issue draft following the issue template. Used in feature issue creation workflows.
-model: sonnet
+model: opus[1m]
 disallowedTools: Edit, NotebookEdit
 ---
 
