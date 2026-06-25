@@ -166,15 +166,7 @@ mkdir -p {{CACHE_DIR}}/test-follow-up/{branch-name}
 
 ### Phase 2: Agent Teams によるテスト評価
 
-#### 2-1. チーム作成
-
-```
-TeamCreate:
-  team_name: "test-follow-up"
-  description: "テストフォローアップチーム"
-```
-
-#### 2-2. Test-Coverage-Reviewer の起動
+#### 2-1. Test-Coverage-Reviewer の起動
 
 変更コードのテスト網羅性評価と、既存テストの陳腐化検出を行います:
 
@@ -318,20 +310,13 @@ Task tool:
 
 ---
 
-### Phase 4: チーム解散と報告
+### Phase 4: シャットダウンと報告
 
 #### 4-1. Teammate のシャットダウン
 
-各 Teammate に `SendMessage` の `shutdown_request` を送信する。
+各 Teammate に `SendMessage` の `shutdown_request` を送信する（チームは implicit のため解体操作は不要）。
 
-#### 4-2. チーム解散
-
-```
-TeamDelete:
-  team_name: "test-follow-up"
-```
-
-#### 4-3. 結果報告
+#### 4-2. 結果報告
 
 ```markdown
 ## テストフォローアップ結果

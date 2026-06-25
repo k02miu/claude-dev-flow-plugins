@@ -149,17 +149,9 @@ find .cache/c-f-i-t/{{TASK_SLUG}}/ -name "*.md" -type f -delete 2>/dev/null || t
 
 ---
 
-### Step 2: チーム作成とタスク定義
+### Step 2: タスク定義
 
-#### 2-1. チーム作成
-
-```
-TeamCreate:
-  team_name: "feature-plan"
-  description: "機能実装プラン調査チーム"
-```
-
-#### 2-2. タスク作成
+#### 2-1. タスク作成
 
 Step 1-4 で起動対象とした観点のみ `TaskCreate` + `TaskUpdate` で作成する（番号は下表に従う。起動しない観点は欠番でよい）。
 
@@ -209,7 +201,6 @@ Task tool 呼び出し例:
 ```
 Task tool:
   subagent_type: "devflow:architecture-planner"
-  team_name: "feature-plan"
   name: "architecture-planner"
   description: "アーキテクチャ設計"
   prompt: |
@@ -246,7 +237,6 @@ Teammate から SendMessage で「質問があります」を受けたら:
 ```
 Task tool:
   subagent_type: "devflow:plan-integrator"
-  team_name: "feature-plan"
   name: "plan-integrator"
   description: "プラン統合・Issue 作成"
   prompt: |
@@ -266,7 +256,6 @@ Task tool:
 ```
 Task tool:
   subagent_type: "devflow:issue-reviewer"
-  team_name: "feature-plan"
   name: "issue-reviewer"
   description: "Issue ドラフトレビュー"
   prompt: |
@@ -323,9 +312,9 @@ Issue URL をユーザーに報告する。
 
 ---
 
-### Step 10: チーム解散
+### Step 10: Teammate のシャットダウン
 
-全作業の完了後、各 Teammate に `SendMessage` で `shutdown_request` を送り、全員のシャットダウン後に `TeamDelete` で解散する。
+全作業の完了後、各 Teammate に `SendMessage` で `shutdown_request` を送る（チームは implicit のため解体操作は不要）。
 
 ---
 

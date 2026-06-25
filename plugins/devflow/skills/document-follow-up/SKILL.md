@@ -145,15 +145,7 @@ mkdir -p {{CACHE_DIR}}/document-follow-up/{branch-name}
 
 ### Phase 2: Docs-Synthesizer による乖離検出
 
-#### 2-1. チーム作成
-
-```
-TeamCreate:
-  team_name: "document-follow-up"
-  description: "ドキュメントフォローアップチーム"
-```
-
-#### 2-2. Docs-Synthesizer の起動
+#### 2-1. Docs-Synthesizer の起動
 
 `docs-synthesizer` を 1 体起動し、変更差分と既存ドキュメントの比較を依頼:
 
@@ -237,20 +229,13 @@ Task tool:
 
 ---
 
-### Phase 4: チーム解散と報告
+### Phase 4: シャットダウンと報告
 
 #### 4-1. Docs-Synthesizer のシャットダウン
 
-`docs-synthesizer` に `SendMessage` の `shutdown_request` を送信する。
+`docs-synthesizer` に `SendMessage` の `shutdown_request` を送信する（チームは implicit のため解体操作は不要）。
 
-#### 4-2. チーム解散
-
-```
-TeamDelete:
-  team_name: "document-follow-up"
-```
-
-#### 4-3. 結果報告
+#### 4-2. 結果報告
 
 ```markdown
 ## ドキュメントフォローアップ結果

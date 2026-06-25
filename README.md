@@ -6,10 +6,10 @@ Claude Code の **Agent Teams** 機能を活用し、複数エージェントに
 
 ## 必要要件
 
-- **Claude Code**（v2.0+） — `npm install -g @anthropic-ai/claude-code` またはネイティブインストーラで導入
-- **Agent Teams** — `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が必要
+- **Claude Code**（v2.1.178+） — implicit team モデル（`TeamCreate` 無しで Teammate を起動）に必要。`npm install -g @anthropic-ai/claude-code` 等で導入
+- **Agent Teams** — `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` が必要（v2.1.178 時点でも experimental・デフォルト無効）
 - **gh CLI**（GitHub CLI） — `gh auth login` で認証済みであること
-- **teammateMode** — Claude Code の設定で `"tmux"` を指定
+- **teammateMode**（任意） — 既定 `"in-process"` で任意の端末で動作。Teammate をペイン分割表示したい場合のみ `"tmux"`（tmux / iTerm2 が必要）
 - **同梱 MCP のランタイム** — Node.js（`npx` — context7 用）、Python + uv（`uvx` — serena 用）
 
 ## リポジトリ構成（マーケットプレイス + プラグイン）
@@ -141,14 +141,15 @@ PR レビューの自動収束ループ:
 ## プロジェクト / ユーザー設定
 
 プラグインは環境変数や `teammateMode` をあなたの代わりに設定できません。これらは **あなた自身の**
-`~/.claude/settings.json`（ユーザースコープ）またはプロジェクトの `.claude/settings.json` に記述する必要があります:
+`~/.claude/settings.json`（ユーザースコープ）またはプロジェクトの `.claude/settings.json` に記述する必要があります。
+必須は `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` のみ。`teammateMode` は任意で、既定の `"in-process"` なら追加ツール不要です:
 
 ```json
 {
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "teammateMode": "tmux"
+  "teammateMode": "in-process"
 }
 ```
 
@@ -180,7 +181,7 @@ PR レビューの自動収束ループ:
 ### devcontainer での注意点
 
 - コンテナイメージに以下を含めてください: **Node.js**（`npx` — context7 / Azure MCP 用）、
-  **uv**（`uvx` — serena / AWS MCP 用）、**tmux**（`teammateMode: "tmux"` 用）、**gh CLI**
+  **uv**（`uvx` — serena / AWS MCP 用）、**gh CLI**。**tmux** は任意（`teammateMode: "tmux"` でペイン分割する場合のみ）
 - `GOOGLE_DEVELOPER_KNOWLEDGE_API_KEY` などのシークレットは settings.json にコミットせず、
   devcontainer の `remoteEnv` / secrets 機構やホスト側の環境変数で注入してください
 

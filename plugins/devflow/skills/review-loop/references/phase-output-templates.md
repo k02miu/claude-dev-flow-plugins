@@ -128,7 +128,7 @@ ID 体系:
 - 既存の機能を壊さないこと
 - 各 finding の「推奨修正」に従うこと
 - commit & push は絶対に行わないこと（review-loop 側で継続するため）
-- **作業完了後、Teammate を解散しないこと**（review-loop が後続 iteration で再利用するため、`shutdown_request` / `TeamDelete` を打たない）
+- **作業完了後、Teammate を解散しないこと**（review-loop が後続 iteration で再利用するため、`shutdown_request` を打たない）
 ```
 
 ## Phase 1-C-2-B: implement チームへの追加修正依頼テンプレ（2 回目以降）
