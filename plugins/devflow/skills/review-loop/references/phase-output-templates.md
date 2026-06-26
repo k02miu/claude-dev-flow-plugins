@@ -42,6 +42,7 @@ Write 先: `{{CACHE_DIR}}/review-loop/{{TASK_SLUG}}/target-files.md`
 
 - **場所**: `path/to/file.ext:42`
 - **カテゴリ**: code_quality / architecture / security / performance / testing / infra
+- **種別**: defect（客観的欠陥・severity 不問で要修正。typo もここ）/ judgment（妥当だが対応は裁量）/ spurious（誤検出・除外）。Fix と Exit はこの種別で判断し、severity では gate しない
 - **証拠**: {引用（1-3 行）}
 - **問題**: {何が問題か}
 - **影響**: {対応しない場合のリスク}

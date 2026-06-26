@@ -27,7 +27,7 @@ claude --version 2>/dev/null || echo "VERSION_UNKNOWN"
 - 次のいずれかに該当 → **`WORKFLOW_UNAVAILABLE`**（副経路へ直行）
   - `CLAUDE_CODE_DISABLE_WORKFLOWS=1`
   - settings に `"disableWorkflows": true`
-  - version < 2.1.154
+  - version < 2.1.154（注: プラグインのグローバル要件が v2.1.178+ のため、この version 判定は実質到達しない防御的チェック。要件未満の環境では de-Team-API 済みの副経路も動かない。判定の主眼は前 2 項）
 - いずれにも該当しない → **`WORKFLOW_CANDIDATE`**（主経路を試行）
 
 注意: **プラン種別（Pro/Max/Team/Enterprise）と `/config` の Dynamic workflows 有効状態は実行時に検出できない。** よって `WORKFLOW_CANDIDATE` は「使える保証」ではなく「試す価値あり」を意味する。最終的な可否はツール呼び出しの結果で確定する（次節）。
@@ -40,7 +40,11 @@ claude --version 2>/dev/null || echo "VERSION_UNKNOWN"
 
 1. 各 skill の「Workflow 仕様」節に従って Workflow ツールでスクリプトを authoring・起動する。
 2. **Workflow ツールが利用不可（ツールが存在しない / 呼び出しがエラーを返す / 即座に失敗）の場合は、その時点で副経路（Agent Teams）に切り替える。** 失敗の検出はリーダー（あなた）がツール結果を観察して行う。standard な自動 graceful fallback は文書化されていないため、リーダーの観察による分岐が唯一確実な手段。
-3. partial に実行された痕跡（scratchpad 上のファイル）が残った場合は、副経路でやり直す前にそれを確認し、二重実行・破壊が起きないことを確かめる。
+3. partial に実行された痕跡が残った場合（主経路の Fix が一部適用された後に失敗を検出した等）は、副経路でやり直す前に**作業ツリーの状態を取り直す**:
+   - `git status --short` と `git diff --stat` で、workflow が加えた未コミット変更を把握する。
+   - 副経路の Context（差分取得）は失敗時点の作業ツリーに対して**改めて実行**し、古い差分を使い回さない。これにより Fix 済みの箇所が二重修正されない。
+   - workflow が scratchpad に残した中間ファイルは副経路の入力にせず、作業ツリーの実差分のみを真とする。
+   - commit/push は行っていない前提なので、ロールバックが要るときも `git restore` 等で作業ツリー単位で戻せる（不可逆操作は allowlist 除外で発生しない）。
 4. workflow が正常完了 → その O 契約出力（`${CLAUDE_PLUGIN_ROOT}/references/o-contract.md`）を最終報告にそのまま使う。
 
 `WORKFLOW_UNAVAILABLE` の場合は主経路を試行せず、副経路の手順に直行する。

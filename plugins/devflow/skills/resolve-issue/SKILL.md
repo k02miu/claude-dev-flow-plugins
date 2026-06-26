@@ -1,7 +1,7 @@
 ---
 argument-hint: [issue number]
 name: resolve-issue
-description: "Agent Teams で多角的に調査・計画し GitHub Issue を解決する"
+description: "dynamic Workflow（利用可環境）または Agent Teams で多角的に調査・計画し GitHub Issue を解決する"
 disable-model-invocation: true
 ---
 
@@ -54,6 +54,16 @@ Agent Teams を使い、**プロジェクト専用のローカルエージェン
 - Phase 3 で別コンテキストから実装プランをレビュー（MCP で技術的正確性を検証）
 - 承認後にチームリーダーが実装を実行
 
+## 経路（主経路 Workflow / 副経路 Agent Teams）
+
+Phase 1〜3（調査→統合→レビュー）は 2 経路を持つ。主経路は dynamic Workflow、副経路は Agent Teams。
+**Step 1 のユーザー事前確認（種別判定・承認）・Step 7 のプラン承認・Step 8 の実装は、どちらの経路でもリーダー側で実施**する（workflow は実行中にユーザーへ問えないため、種別判定や Issue の曖昧さは workflow 起動前に潰す）。
+
+- 主経路（Workflow 利用可）: 「主経路: Workflow 仕様」に従い、調査ファンアウト→plan-integrator 統合→issue-reviewer レビューを 1 workflow で実行し、実装プラン（O 契約）を受け取る。
+- 副経路（Workflow 利用不可）: 「副経路: コンテキスト管理戦略」以降の Agent Teams 手順（Step 0〜9）で回す。
+
+最初に capability を判定（`${CLAUDE_PLUGIN_ROOT}/references/workflow-capability.md`）。O 契約（`${CLAUDE_PLUGIN_ROOT}/references/o-contract.md`）と allowlist 制約は両経路共通。
+
 ---
 
 ## チーム構成（最大 8 Teammate・起動対象は種別で変動）
@@ -96,7 +106,70 @@ Phase 3（順次）── issue-reviewer             [Task 8] blockedBy: [7]
 
 ---
 
-## コンテキスト管理戦略
+## 主経路: Workflow 仕様
+
+Step 1（gh 確認・Issue 確認・種別判定・ユーザー事前確認）を**先にリーダー側で実施**してから、`WORKFLOW_CANDIDATE` の場合に以下の workflow を authoring・実行する。workflow ツールが利用不可と判明したら副経路へ切替。
+API 表面（`agent({schema,agentType,model,effort})` / `parallel()` / `phase()` / `return`、`agentType` にプラグイン名前空間 `devflow:*` 可）は review-loop パイロットで実機検証済み。
+
+### フェーズ構成（調査パイプライン）
+
+| フェーズ | 役割 | モデル目安 |
+|---|---|---|
+| Context | I の pre-stage。Issue 本文・コメント・リポジトリ規約・関連コードを集約し、各調査 agent に渡す context を必要十分にキュレーション | 安価（`sonnet`/`low`） |
+| Investigate | Step 1-4 の種別判定で選んだ調査次元を `agent({agentType, schema})` で並列 fan-out | 判断系（既定継承） |
+| Integrate | `devflow:plan-integrator` が全調査結果を統合し実装プラン作成（barrier: 全調査の完了が必要） | 判断系 |
+| Review | `devflow:issue-reviewer` がプランをレビュー、リーダーが反映 | 判断系 |
+| Report | O 契約（実装プラン + criticalDecisions）を schema 出力 | 安価 |
+
+### 調査次元（Investigate の fan-out 対象）
+
+副経路「チーム構成」表と同じ agent を `agentType` に。Step 1-4 で選んだものだけ起動:
+`devflow:architecture-planner`（インフラ要否・IaC 兼任）/ `devflow:existing-code-reviewer` / `devflow:library-researcher` / `devflow:security-reviewer` / `devflow:ui-designer` / `devflow:test-planner`。
+
+### 副経路から消える要素（workflow 化で不要になるもの）
+
+- 手動 task DAG（TaskCreate / blockedBy）→ workflow の制御フロー（並列 fan-out → barrier 統合）
+- 中間 report.md のファイル IPC → workflow 変数（調査結果はスクリプト変数で plan-integrator に渡る）
+- Phase 1 直後の `/compact` ハック → 不要（coordination がオフコンテキスト）
+- questions.md 往復 → 主経路では不可。Step 1 の事前確認で曖昧さを潰し、残余は finding / criticalDecisions に落とす
+
+### O 契約
+
+実装プランは意思決定チェックポイント。最終 report に `criticalDecisions`（特に `backwardCompatibility` / `dataModelChange` = DB スキーマ・マイグレーション判断）を含める。`${CLAUDE_PLUGIN_ROOT}/references/o-contract.md` に従い、該当なしでも `notApplicable` + 理由を必須にする。
+
+### 骨格（helper / schema は authoring 時にインライン定義する）
+
+```js
+export const meta = { name: 'resolve-issue',
+  description: 'Investigate -> integrate -> review an issue into an impl plan',
+  phases: [{title:'Context'},{title:'Investigate'},{title:'Integrate'},{title:'Review'},{title:'Report'}] }
+// DIMENSIONS は Step 1-4 の種別判定結果で選ぶ。schema/helper/prompt は authoring 時に定義。
+
+phase('Context')
+const ctx = await agent(contextPrompt(issue), { schema: CTX_SCHEMA, model: 'sonnet', effort: 'low' })
+
+phase('Investigate')
+const reports = await parallel(DIMENSIONS.map(d => () =>
+  agent(investigatePrompt(d, ctx), { agentType: d.agentType, schema: INV_SCHEMA, label: `inv:${d.key}` })))
+
+phase('Integrate')   // barrier: 全調査が揃ってから統合（plan-integrator は全 report が必要）
+const plan = await agent(integratePrompt(ctx, reports.filter(Boolean)),
+  { agentType: 'devflow:plan-integrator', schema: PLAN_SCHEMA })
+
+phase('Review')
+const review = await agent(reviewPrompt(plan), { agentType: 'devflow:issue-reviewer', schema: REVIEW_SCHEMA })
+
+phase('Report')
+return await agent(reportPrompt(plan, review), { schema: FINAL_SCHEMA })   // criticalDecisions 必須
+```
+
+workflow 完了後、返り値（実装プラン）を Step 7 と同じ要領で `final-report.html` に materialize → ユーザー承認 → Step 8 実装（リーダー側、commit/push しない）。
+
+---
+
+## 副経路: コンテキスト管理戦略（Agent Teams）
+
+> 以降（コンテキスト管理戦略・実行手順 Step 0〜9）は副経路（Agent Teams）の手順。主経路では上記 Workflow 仕様に従い、Step 1 と Step 7〜8 のみリーダー側で実施する。
 
 チームリーダーと Teammate 間の通信はすべて **ファイルベース** で行い、コンテキストウィンドウの圧迫を防ぎます。
 
