@@ -9,7 +9,7 @@
 
 【🚨 反復レビュー前提 🚨】
 このタスクは複数 iteration で繰り返し実行されます（最大 5 回）。
-あなたはチーム解散まで在籍し続け、iteration ごとに新しい指示を受け取ります。
+あなたは shutdown_request を受け取るまで在籍し続け、iteration ごとに新しい指示を受け取ります。
 
 - 1 回目の指示書は `{{CACHE_DIR}}/review-loop/{{TASK_SLUG}}/iteration-1/{{TEAMMATE_NAME}}/instruct.md` です
 - 2 回目以降は、リーダーから SendMessage で「iteration N の指示書を Read してください」と通知が来ます

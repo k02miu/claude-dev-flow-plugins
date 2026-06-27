@@ -42,6 +42,7 @@ Write 先: `{{CACHE_DIR}}/review-loop/{{TASK_SLUG}}/target-files.md`
 
 - **場所**: `path/to/file.ext:42`
 - **カテゴリ**: code_quality / architecture / security / performance / testing / infra
+- **種別**: defect（客観的欠陥・severity 不問で要修正。typo もここ）/ judgment（妥当だが対応は裁量）/ spurious（誤検出・除外）。Fix と Exit はこの種別で判断し、severity では gate しない
 - **証拠**: {引用（1-3 行）}
 - **問題**: {何が問題か}
 - **影響**: {対応しない場合のリスク}
@@ -128,7 +129,7 @@ ID 体系:
 - 既存の機能を壊さないこと
 - 各 finding の「推奨修正」に従うこと
 - commit & push は絶対に行わないこと（review-loop 側で継続するため）
-- **作業完了後、Teammate を解散しないこと**（review-loop が後続 iteration で再利用するため、`shutdown_request` / `TeamDelete` を打たない）
+- **作業完了後、Teammate を解散しないこと**（review-loop が後続 iteration で再利用するため、`shutdown_request` を打たない）
 ```
 
 ## Phase 1-C-2-B: implement チームへの追加修正依頼テンプレ（2 回目以降）
@@ -185,6 +186,11 @@ SendMessage:
 
 ### 残存 Low（軽微）
 {項目の列挙、対応見送り推奨の場合はその旨と理由を明記}
+
+## Verify で除外した誤検出（spurious・監査）
+{主経路: 各 iteration の dropped を集約。件数 + 各件の「場所 / 元の指摘 / verifier が spurious と判断した理由」。
+ spurious 除外を握るのは単一バッチ verifier であり、その偽陰性に対する唯一の検出面なので、
+ 0 件なら「除外なし」と明記して黙って省略しない。見送り defect を理由付きで残すのと同格に扱う}
 
 ## 反復中に解消した主な指摘
 {iteration 1 〜 N-1 で修正完了した findings の要約}

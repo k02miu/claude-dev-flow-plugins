@@ -22,6 +22,16 @@ description: |
 PR に対して **`pr-request-review` → 待機 → `pr-review-respond --auto`** をサイクル実行し、
 4モデル（{{PR_REVIEWER_MODEL_NAMES}}）からまともな指摘が出なくなるまで自律的にレビュー＆修正を繰り返します。
 
+## 経路について（Workflow 化の適用範囲）
+
+他のオーケストレーション skill（review-loop / resolve-issue）と異なり、**本ループの主経路はリーダー orchestration のまま**とする。理由:
+
+- 収束ループの核は **gh-API ポーリング（レビュアー bot の応答待ち）と commit & push** であって、subagent の fan-out ではない。ループ本体を workflow に載せても利得が薄い。
+- **push 封じ込め（不可逆/外向き操作の構造的封じ込め、`${CLAUDE_PLUGIN_ROOT}/references/workflow-capability.md` §3）と相反する**: 本ループは毎ラウンド `pr-review-respond --auto` が commit & push する。workflow subagent は親 allowlist を継承するため、push を allowlist に入れれば封じ込めが崩れ、入れなければループが成立しない。したがって **commit & push はリーダー側（workflow の外）で実行し、push 系を workflow allowlist に入れない**方針を維持する。保護ブランチチェック（手順 0-3）と force push 禁止（注意事項）が封じ込めの実体。
+- workflow 化の利得が出るのは **1ラウンド内の指摘分析**（並列の専門エージェント分析 → opinion-integrator）であり、これは `pr-review-respond` 側の責務。当該 skill が workflow 主経路を持てば、本ループは透過的にその恩恵を受ける（本ループ自体の改修は不要）。
+
+capability 判定が必要になった場合（将来 `pr-review-respond` を workflow 化する際など）は `${CLAUDE_PLUGIN_ROOT}/references/workflow-capability.md` を参照する。
+
 ## 変数定義
 
 本 SKILL.md では以下の {{VARIABLE}} を使用します。実際のプロジェクトの値に置き換えて使用してください。
