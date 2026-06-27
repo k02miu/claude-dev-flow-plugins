@@ -134,6 +134,7 @@ Gemini（`agy`）は主経路では**同期呼び出し**（`&` なし・stdout 
 
 - `for` ループで最大 5 iteration。`prevFindings` は変数で次 iteration に渡す（ファイル IPC 不要）。
 - **Exit / Fix の軸は severity ではなく defect / judgment**: typo は low でも客観的欠陥＝必ず直す。severity で fix を gate しない。Exit 条件は JS で判定: (1) defect が 0（残るのは judgment と見送り項目だけ）、(2) defect が前 iteration から減らず judgment だけが揺れている＝収束、(3) `iteration == 5`。
+- **収束判定（Exit 2）の同一性キー**: `sameDefects(defects, prevDefects)` は defect を**正規化した `file path + line + category`** で照合する（自由文 `title` で照合しない）。title で照合すると re-spawn のたびに表現が揺れて収束が永久に fire せず、毎回 `iteration == 5` まで回る（severity ヒストグラム収束が壊れたのと同じ非決定性）。defect は客観的なので nitpick より re-spawn 跨ぎで安定し、このキーなら収束判定が機能する。
 - **「Low も必ず対応」「件数で打ち切らない」はプロンプト祈願でなく構造で保証する**: Fix は severity 不問で全 defect を対象にする。fresh-spawn のたびに別の主観 nitpick が湧くが、それは Verify で spurious として落ちるので収束を妨げない（severity ヒストグラム一致による収束判定は fresh-spawn の非決定性で機能しないことを試走で確認済み）。「対応見送り推奨」と判断した defect のみ理由付きで report に記録し、黙って捨てない。
 - `token budget`（`budget.total`）で run 全体の上限を設ける。非エンジニア利用も想定し保守的に。
 
@@ -141,7 +142,8 @@ Gemini（`agy`）は主経路では**同期呼び出し**（`&` なし・stdout 
 
 - **mid-run でユーザーに問わない**: workflow 中の agent に `AskUserQuestion` を呼ばせない（workflow は実行中の対話ができない）。曖昧さは Context pre-stage で前倒しに解決し、残余は「質問」ではなく **finding か `criticalDecisions`** に落とす（副経路の `questions.md` 往復は主経路には無い）。
 - **Gemini は同期**: 上記のとおり `agy` を同期 review source にするか落とす。`&`+ポーリングは使わない。
-- **Verify はバッチで全件**: finding ごとに verifier を spawn すると反復数×件数で agent が膨らむ（1 agent ≈ 20k トークンの固定費を実測）。1 verifier が**全 finding を一括** refute し、各件を defect / judgment / spurious に分類する。バッチなので件数が増えてもエージェント数は 1（severity で絞らない。typo のような客観 low も verify を通って defect として残り、Fix で直る）。
+- **Verify はバッチで全件**: finding ごとに verifier を spawn すると反復数×件数で agent が膨らむ（1 agent ≈ 20k トークンの固定費を実測）。1 verifier が**全 finding を一括** refute し、各件を defect / judgment / spurious に分類する（verdict schema は `kind` に加え `reason` を持たせる）。バッチなので件数が増えてもエージェント数は 1（severity で絞らない。typo のような客観 low も verify を通って defect として残り、Fix で直る）。
+- **spurious は黙って捨てない（監査痕跡）**: このバッチ verifier は anti-laziness 保証の**単一障害点**であり、その偽陰性（実 defect を spurious と誤判定）は無音で保証を破る。**spurious の監査出力（Report の除外一覧）がその偽陰性に対する唯一の検出面**。spurious は fix 対象から外してよいが、drop する前に `history` に記録し、Report に件数＋各件の場所・元の指摘・除外理由を出す（「対応見送り defect を理由付きで残す」のと同格＝パリティ）。
 
 ### O 契約
 
@@ -186,12 +188,15 @@ for (let n = 1; n <= 5; n++) {
   let findings = dedupe(reviews.filter(Boolean).flatMap(r => r.findings))
 
   phase('Verify')                      // バッチ refute: 1 agent が全 finding を defect/judgment/spurious に分類
+  let dropped = []                                            // spurious: fix からは外すが監査痕跡として残す
   if (findings.length) {
-    const verdicts = await agent(batchClassifyPrompt(findings), { schema: VERDICTS_SCHEMA })  // 各 id に kind を付与
-    findings = applyKinds(findings, verdicts).filter(f => f.kind !== 'spurious')  // 誤検出を落とす
+    const verdicts = await agent(batchClassifyPrompt(findings), { schema: VERDICTS_SCHEMA })  // 各 id に kind + reason
+    const classified = applyKinds(findings, verdicts)         // 各 finding に kind と verifier の reason を付与
+    dropped = classified.filter(f => f.kind === 'spurious')   // 記録には残す（black-hole にしない）
+    findings = classified.filter(f => f.kind !== 'spurious')
   }
   const defects = findings.filter(f => f.kind === 'defect')   // severity 不問。typo(low) もここに入る
-  history.push({ n, findings, defects })
+  history.push({ n, findings, defects, dropped })             // dropped を Report の spurious 監査セクションへ
 
   if (defects.length === 0) { exitReason = 'all-clear'; break }              // 残るは judgment と見送りのみ
   if (sameDefects(defects, prevDefects)) { exitReason = 'converged'; break } // defect が減らず judgment だけ揺れる
@@ -203,7 +208,7 @@ for (let n = 1; n <= 5; n++) {
 if (!exitReason) exitReason = 'max-iterations'
 
 phase('Report')
-return await agent(reportPrompt(history, exitReason), { schema: REPORT_SCHEMA })  // criticalDecisions 必須
+return await agent(reportPrompt(history, exitReason), { schema: REPORT_SCHEMA })  // criticalDecisions + spurious 除外一覧（各件の場所/元指摘/除外理由）必須
 ```
 
 workflow 完了後、返り値（O 契約）を Phase 2 と同じ要領で `final-report.html` に materialize し、ユーザーに要点提示する（非ブロッキングの出力アーティファクト）。

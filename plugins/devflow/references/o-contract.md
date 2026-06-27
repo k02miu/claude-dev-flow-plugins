@@ -47,5 +47,6 @@ schema に通った構造データを、最終 report（`final-report.html` / `r
 - `status: decided` のカテゴリ: 判断 / 根拠 / 棄却した代替案 / confidence / reversibility を表示。
 - `status: notApplicable` のカテゴリ: 「該当なし」と理由を 1 行で表示（黙って省略しない）。
 - `reversibility: irreversible | costly` の項目は視覚的に強調し、人間が事後に必ず目を通せるようにする。
+- レビュー findings を出す report の場合、**Verify で `spurious`（誤検出）として除外した finding** も件数＋各件の場所・元の指摘・除外理由を表示する（黙って省略しない。除外を握る単一 verifier の偽陰性に対する唯一の監査面のため、見送り項目と同格に扱う。0 件なら「除外なし」と明記）。
 
 この report は**同期ゲートではない**。実行をブロックして承認を待つものではなく、決定して進んだ結果の監査面を出力アーティファクトとして残すもの。

@@ -58,6 +58,7 @@ Agent Teams を使い、**プロジェクト専用のローカルエージェン
 
 Phase 1〜3（調査→統合→レビュー）は 2 経路を持つ。主経路は dynamic Workflow、副経路は Agent Teams。
 **Step 1 のユーザー事前確認（種別判定・承認）・Step 7 のプラン承認・Step 8 の実装は、どちらの経路でもリーダー側で実施**する（workflow は実行中にユーザーへ問えないため、種別判定や Issue の曖昧さは workflow 起動前に潰す）。
+Step 7 のプラン承認ゲートは、review-loop の「可逆なものは decide-and-proceed・criticalDecisions で事後監査」より介在的だが、**issue 解決は実装まで産むため意図的に保守側に倒している**（実装着手前の意思決定チェックポイント）。
 
 - 主経路（Workflow 利用可）: 「主経路: Workflow 仕様」に従い、調査ファンアウト→plan-integrator 統合→issue-reviewer レビューを 1 workflow で実行し、実装プラン（O 契約）を受け取る。
 - 副経路（Workflow 利用不可）: 「副経路: コンテキスト管理戦略」以降の Agent Teams 手順（Step 0〜9）で回す。

@@ -187,6 +187,11 @@ SendMessage:
 ### 残存 Low（軽微）
 {項目の列挙、対応見送り推奨の場合はその旨と理由を明記}
 
+## Verify で除外した誤検出（spurious・監査）
+{主経路: 各 iteration の dropped を集約。件数 + 各件の「場所 / 元の指摘 / verifier が spurious と判断した理由」。
+ spurious 除外を握るのは単一バッチ verifier であり、その偽陰性に対する唯一の検出面なので、
+ 0 件なら「除外なし」と明記して黙って省略しない。見送り defect を理由付きで残すのと同格に扱う}
+
 ## 反復中に解消した主な指摘
 {iteration 1 〜 N-1 で修正完了した findings の要約}
 
