@@ -134,7 +134,10 @@ Gemini（`agy`）は主経路では**同期呼び出し**（`&` なし・stdout 
 
 - `for` ループで最大 5 iteration。`prevFindings` は変数で次 iteration に渡す（ファイル IPC 不要）。
 - **Exit / Fix の軸は severity ではなく defect / judgment**: typo は low でも客観的欠陥＝必ず直す。severity で fix を gate しない。Exit 条件は JS で判定: (1) defect が 0（残るのは judgment と見送り項目だけ）、(2) defect が前 iteration から減らず judgment だけが揺れている＝収束、(3) `iteration == 5`。
-- **収束判定（Exit 2）の同一性キー**: `sameDefects(defects, prevDefects)` は defect を**正規化した `file path + line + category`** で照合する（自由文 `title` で照合しない）。title で照合すると re-spawn のたびに表現が揺れて収束が永久に fire せず、毎回 `iteration == 5` まで回る（severity ヒストグラム収束が壊れたのと同じ非決定性）。defect は客観的なので nitpick より re-spawn 跨ぎで安定し、このキーなら収束判定が機能する。
+- **収束判定（Exit 2）の同一性キー**: `sameDefects(defects, prevDefects)` は defect を **`file path + category + 正規化した evidence（該当コード断片のフィンガープリント）`** で照合する。**`line` も自由文 `title` もキーにしない**。
+  - `title` を使うと re-spawn のたびに表現が揺れて収束が永久に fire せず、毎回 `iteration == 5` まで回る（severity ヒストグラム収束が壊れたのと同じ非決定性）。
+  - `line` は **fix-stable でない**: Fix が同ファイルの別箇所を編集すると未解決 defect の行番号がずれ、同一 defect が別物と見なされて収束検知が漏れる。fix を跨いで安定する **evidence 断片（取得できなければ enclosing symbol 名）** をアンカーにする。
+  - defect は客観的なので re-spawn 跨ぎでも安定し、fix-stable なキーと併せれば収束判定が機能する。
 - **「Low も必ず対応」「件数で打ち切らない」はプロンプト祈願でなく構造で保証する**: Fix は severity 不問で全 defect を対象にする。fresh-spawn のたびに別の主観 nitpick が湧くが、それは Verify で spurious として落ちるので収束を妨げない（severity ヒストグラム一致による収束判定は fresh-spawn の非決定性で機能しないことを試走で確認済み）。「対応見送り推奨」と判断した defect のみ理由付きで report に記録し、黙って捨てない。
 - `token budget`（`budget.total`）で run 全体の上限を設ける。非エンジニア利用も想定し保守的に。
 
